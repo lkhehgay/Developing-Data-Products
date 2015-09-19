@@ -1,0 +1,79 @@
+---
+title       : Children Running Event
+subtitle    : LKG
+author      : 
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [bootstrap, shiny, interactive]            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Introduction
+
+This presentation serves as a simple documentation using slidify to introduce the shiny application developed.
+
+---
+
+## Shiny Applicaton - Children Running Event
+
+The shiny application developed allows the users to enter information such as
+- Gender
+- Age
+- Date of Test
+- Distance runned
+
+Besides the data entries, this applicaton allows the user to check on the mean of the distance runned by the participants through the use of graphs.
+
+---
+
+## Sample Codes in ui.R
+```
+library(shiny)
+shinyUI(pageWithSidebar(
+  headerPanel("Children Running Event"),
+  sidebarPanel(
+    textInput('name', 'Name of Children Running Event', ''),
+    numericInput('participant', 'Number of Participants', 0, min = 0, max = 10, step = 1),
+    radioButtons("gender", "Gender of Participating Group", c("Male" = "male", "Female" = "female")),
+    checkboxGroupInput("excuse", "Medical Excuse",
+                       c("Hand" = "1",
+                         "Leg" = "2")),
+    dateInput("date", "Date of Children Running Event"),
+    sliderInput("distance", "Distance Run (KM)", value = 2, min = 1, max = 3, step = 0.25,)
+  ),
+  mainPanel(
+    plotOutput('newHist')
+  )
+))
+```
+
+---
+
+## Sample Codes in server.R
+```
+library(shiny)
+library(UsingR)
+data(galton)
+
+shinyServer(
+  function(input, output) {
+    output$output_name <- renderPrint({input$name})
+    output$output_participant <- renderPrint({input$participant})
+    output$output_gender <- renderPrint({input$gender})
+    output$output_excuse <- renderPrint({input$excuse})
+    output$output_date <- renderPrint({input$date})
+    output$output_distance <- renderPrint({input$distance})
+    
+    
+    output$newHist <- renderPlot({
+      hist(rnorm(input$distance, mean = 0, sd = 1), col = 'lightblue', main = paste('Sample Histogram with Input Distance of ', input$distance, 'km'))
+    })
+  }
+)
+
+```
+
+---
